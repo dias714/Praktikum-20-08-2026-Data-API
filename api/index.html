@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Data Users JSON API</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            background: #f5f7fb;
+            margin: 0;
+            padding: 30px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: auto;
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+        }
+
+        h2 {
+            text-align: center;
+            margin-top: 0;
+            color: #222;
+        }
+
+        .top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 9px 14px;
+            border-radius: 6px;
+            text-decoration: none;
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .btn-tambah {
+            background: #198754;
+        }
+
+        .btn-edit {
+            background: #ffc107;
+            color: #000;
+        }
+
+        .btn-hapus {
+            background: #dc3545;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th {
+            background: #0d6efd;
+            color: white;
+            padding: 12px;
+            border: 1px solid #ddd;
+        }
+
+        td {
+            padding: 10px;
+            border: 1px solid #ddd;
+        }
+
+        tr:nth-child(even) {
+            background: #f8f9fa;
+        }
+
+        tr:hover {
+            background: #eef5ff;
+        }
+
+        .center {
+            text-align: center;
+        }
+
+        .aksi {
+            white-space: nowrap;
+        }
+
+        .loading {
+            text-align: center;
+            font-weight: bold;
+            color: #0d6efd;
+        }
+
+        .error {
+            color: red;
+            text-align: center;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <h2>Data Users dari JSON API</h2>
+
+    <div class="top">
+        <div>
+            Data Users
+        </div>
+
+        <a href="tambah.php" class="btn btn-tambah">
+            + Tambah Data
+        </a>
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <th width="70">NO / ID</th>
+                <th>Nama</th>
+                <th>Username</th>
+                <th>Email</th>
+                <th>Alamat</th>
+                <th width="180">Aksi</th>
+            </tr>
+        </thead>
+
+        <tbody id="hasil">
+            <tr>
+                <td colspan="6" class="loading">
+                    Memuat data...
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+</div>
+
+<script>
+
+fetch("data_json.php")
+
+.then(response => {
+
+    if (!response.ok) {
+        throw new Error("Gagal mengambil data");
+    }
+
+    return response.json();
+})
+
+.then(data => {
+
+    let html = "";
+
+    data.forEach(item => {
+
+        html += `
+            <tr>
+
+                <td class="center">
+                    ${item.id}
+                </td>
+
+                <td>
+                    ${item.name}
+                </td>
+
+                <td>
+                    ${item.username}
+                </td>
+
+                <td>
+                    ${item.email}
+                </td>
+
+                <td>
+                    ${item.address.street},
+                    ${item.address.suite},
+                    ${item.address.city},
+                    ${item.address.zipcode}
+                </td>
+
+                <td class="aksi">
+
+                    <a
+                        href="edit.php?id=${item.id}"
+                        class="btn btn-edit">
+                        Edit
+                    </a>
+
+                    <a
+                        href="hapus.php?id=${item.id}"
+                        class="btn btn-hapus"
+                        onclick="return confirm('Yakin ingin menghapus data ini?')">
+                        Hapus
+                    </a>
+
+                </td>
+
+            </tr>
+        `;
+    });
+
+    document.getElementById("hasil").innerHTML = html;
+
+})
+
+.catch(error => {
+
+    document.getElementById("hasil").innerHTML = `
+        <tr>
+            <td colspan="6" class="error">
+                Gagal mengambil data JSON.
+            </td>
+        </tr>
+    `;
+
+    console.error(error);
+
+});
+
+</script>
+
+</body>
+</html>
